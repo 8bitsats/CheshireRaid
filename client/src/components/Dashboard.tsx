@@ -5,6 +5,7 @@ import WalletConnect from './WalletConnect';
 import TweetVerify from './TweetVerify';
 import ChatInterface from './ChatInterface';
 import BalanceTracker from './BalanceTracker';
+import TokenPrice from './TokenPrice';
 import { getLatestTweets } from '@/lib/twitter';
 
 export default function Dashboard() {
@@ -35,12 +36,15 @@ export default function Dashboard() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-black/50 border-green-500/50 backdrop-blur">
-          <h2 className="text-2xl font-bold mb-4 text-green-400">
-            Balance Tracker
-          </h2>
-          <BalanceTracker />
-        </Card>
+        <div className="space-y-6">
+          <Card className="p-6 bg-black/50 border-green-500/50 backdrop-blur">
+            <h2 className="text-2xl font-bold mb-4 text-green-400">
+              Balance Tracker
+            </h2>
+            <BalanceTracker />
+          </Card>
+          <TokenPrice />
+        </div>
 
         <Card className="md:col-span-2 p-6 bg-black/50 border-purple-500/50 backdrop-blur">
           <h2 className="text-2xl font-bold mb-4 text-purple-400">
