@@ -5,11 +5,11 @@ import WalletConnect from './WalletConnect';
 import TweetVerify from './TweetVerify';
 import ChatInterface from './ChatInterface';
 import BalanceTracker from './BalanceTracker';
-import TokenPrice from './TokenPrice';
 import PayoutTracker from './PayoutTracker';
 import { getLatestTweets } from '@/lib/twitter';
 import { initializePayoutWallet } from '@/lib/solana';
 import { env } from '@/lib/env';
+import TwitterDashboard from './TwitterDashboard';
 
 export default function Dashboard() {
   const [tweets, setTweets] = useState<any[]>([]);
@@ -61,7 +61,9 @@ export default function Dashboard() {
             </h2>
             <BalanceTracker />
           </Card>
-          <TokenPrice />
+          <Card className="p-6 bg-black/50 border-purple-500/50 backdrop-blur">
+            <TwitterDashboard />
+          </Card>
           <PayoutTracker />
         </div>
 

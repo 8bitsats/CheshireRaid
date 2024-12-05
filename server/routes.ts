@@ -32,22 +32,54 @@ export function registerRoutes(app: Express) {
 
   app.get("/api/latest-tweets", async (req, res) => {
     try {
-      // Implement Twitter API call to fetch latest tweets
-      // This is a placeholder implementation
-      const tweets = [
-        {
-          text: "Purring at these $SOL gains while other chains are stuck in a catnap 😺",
-          created_at: new Date().toISOString()
+      if (!process.env.TWITTER_BEARER_TOKEN) {
+        return res.json({ tweets: [] });
+      }
+
+      const response = await axios.get('https://api.twitter.com/2/tweets/search/recent', {
+        headers: {
+          'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
+          'Content-Type': 'application/json'
         },
-        {
-          text: "Just pounced on some fresh alpha in the Solana jungle... meow you see it, meow you don't 🐱",
-          created_at: new Date().toISOString()
+        params: {
+          query: '#solana OR @cheshiregpt',
+          'tweet.fields': 'created_at,author_id,public_metrics',
+          'expansions': 'author_id',
+          'user.fields': 'profile_image_url,username',
+          max_results: 10
         }
-      ];
+      });
+
+      if (!response.data.data || !Array.isArray(response.data.data)) {
+        throw new Error('Invalid response format from Twitter API');
+      }
+
+      const tweets = response.data.data.map((tweet: any) => {
+        const author = response.data.includes?.users?.find(
+          (user: any) => user.id === tweet.author_id
+        ) || { username: 'unknown', profile_image_url: null };
+
+        return {
+          id: tweet.id,
+          text: tweet.text,
+          created_at: tweet.created_at,
+          author: {
+            username: author.username,
+            profile_image_url: author.profile_image_url
+          },
+          metrics: tweet.public_metrics || {
+            retweet_count: 0,
+            reply_count: 0,
+            like_count: 0
+          }
+        };
+      });
 
       res.json({ tweets });
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch tweets" });
+      console.error('Error fetching tweets:', error);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to fetch tweets";
+      res.status(500).json({ error: errorMessage });
     }
   });
 
