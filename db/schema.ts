@@ -38,7 +38,29 @@ export const raidEarnings = pgTable("raid_earnings", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   totalAmount: integer("total_amount").notNull(), // Total amount in lamports
   remainingAmount: integer("remaining_amount").notNull(), // Remaining amount in lamports
+  pointValue: integer("point_value").notNull().default(1000000), // Value per point in lamports (default 0.001 SOL)
   lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
+export const userTweets = pgTable("user_tweets", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
+  tweetId: text("tweet_id").notNull(),
+  text: text("tweet_text").notNull(),
+  points: integer("points").notNull().default(0),
+  hashTags: text("hash_tags").array(),
+  mentions: text("mentions").array(),
+  verified: boolean("verified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const pointRules = pgTable("point_rules", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  type: text("type").notNull(), // 'hashtag' or 'mention'
+  value: text("value").notNull(), // the actual hashtag or mention
+  points: integer("points").notNull(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users);
