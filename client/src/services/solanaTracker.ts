@@ -12,7 +12,7 @@ export interface Token {
   image?: string;
 }
 
-const SOLANA_TRACKER_API = 'https://api.solanatracker.io/v1';
+const SOLANA_TRACKER_API = 'https://pro-api.solscan.io/v1';
 
 export async function fetchTrendingTokens(timeframe: '15m' | '1h' | '24h'): Promise<Token[]> {
   try {
@@ -37,9 +37,9 @@ export async function fetchTrendingTokens(timeframe: '15m' | '1h' | '24h'): Prom
 
 export async function fetchTokenPrice(tokenAddress: string): Promise<Token> {
   try {
-    const response = await fetch(`${SOLANA_TRACKER_API}/tokens/${tokenAddress}`, {
+    const response = await fetch(`${SOLANA_TRACKER_API}/token/meta?tokenAddress=${tokenAddress}`, {
       headers: {
-        'Authorization': `Bearer ${env.SOLANA_TRACKER_API_KEY}`,
+        'token': env.SOLANA_TRACKER_API_KEY,
         'Accept': 'application/json'
       }
     });
@@ -48,7 +48,20 @@ export async function fetchTokenPrice(tokenAddress: string): Promise<Token> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    
+    // Transform the response to match our Token interface
+    return {
+      address: tokenAddress,
+      name: data.name || 'Unknown',
+      symbol: data.symbol || 'Unknown',
+      price: data.priceUsdt || 0,
+      price_change: data.priceChange24h || 0,
+      volume: data.volume24h || 0,
+      market_cap: data.marketCapFD || 0,
+      holders: data.holder || 0,
+      image: data.icon || undefined
+    };
   } catch (error) {
     console.error('Error fetching token price:', error);
     throw error;
