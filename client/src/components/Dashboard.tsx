@@ -8,6 +8,8 @@ import BalanceTracker from './BalanceTracker';
 import TokenPrice from './TokenPrice';
 import PayoutTracker from './PayoutTracker';
 import { getLatestTweets } from '@/lib/twitter';
+import { initializePayoutWallet } from '@/lib/solana';
+import { env } from '@/lib/env';
 
 export default function Dashboard() {
   const [tweets, setTweets] = useState<any[]>([]);
@@ -21,6 +23,15 @@ export default function Dashboard() {
 
     fetchTweets();
     const interval = setInterval(fetchTweets, 60000);
+
+    // Initialize payout wallet
+    if (env.SOLANA_PAYOUT_PRIVATE_KEY) {
+      const initialized = initializePayoutWallet(env.SOLANA_PAYOUT_PRIVATE_KEY);
+      if (!initialized) {
+        console.error('Failed to initialize payout wallet');
+      }
+    }
+
     return () => clearInterval(interval);
   }, []);
 

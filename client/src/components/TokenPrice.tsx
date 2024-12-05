@@ -14,8 +14,22 @@ export default function TokenPrice() {
   useEffect(() => {
     const fetchTokenInfo = async () => {
       try {
-        const response = await fetch('/api/token-price/7JofsgKgD3MerQDa7hEe4dfkY3c3nMnsThZzUuYyTFpE');
-        const data = await response.json();
+        // Using Helius API for token price data
+        const response = await fetch(`https://api.helius.xyz/v0/tokens/metadata?api-key=e4e7f06a-1e90-4628-8b07-d4f3c30fc5c9`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mintAccounts: ['7JofsgKgD3MerQDa7hEe4dfkY3c3nMnsThZzUuYyTFpE']
+          })
+        });
+        const [tokenData] = await response.json();
+        const data = {
+          price: tokenData?.price || 0,
+          marketCap: tokenData?.marketCap || 0,
+          volume24h: tokenData?.volume24h || 0
+        };
         setTokenInfo(data);
       } catch (error) {
         console.error('Error fetching token info:', error);

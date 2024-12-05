@@ -6,22 +6,7 @@ import { eq, sql, desc } from "drizzle-orm";
 import axios from 'axios';
 
 export function registerRoutes(app: Express) {
-  // Token price endpoint
-  app.get('/api/token-price/:tokenAddress', async (req, res) => {
-    try {
-      const { tokenAddress } = req.params;
-      const response = await axios.get(`https://data.solanatracker.io/tokens/${tokenAddress}`, {
-        headers: {
-          'x-api-base-url': 'https://data.solanatracker.io'
-        }
-      });
-      
-      res.json(response.data);
-    } catch (error) {
-      console.error('Error fetching token price:', error);
-      res.status(500).json({ error: 'Failed to fetch token price' });
-    }
-  });
+  
   // Twitter verification endpoints
   app.get("/api/verify-tweet", async (req, res) => {
     const { username } = req.query;
