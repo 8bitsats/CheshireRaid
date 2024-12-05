@@ -11,11 +11,20 @@ let payoutWallet: Keypair | null = null;
 
 export function initializePayoutWallet(privateKeyString: string) {
   try {
+    if (!privateKeyString || privateKeyString === 'undefined') {
+      console.warn('No payout wallet private key provided - this is optional and only needed for payouts');
+      return false;
+    }
     const privateKeyBytes = bs58.decode(privateKeyString);
     payoutWallet = Keypair.fromSecretKey(privateKeyBytes);
+    console.log('Payout wallet initialized successfully');
     return true;
   } catch (error) {
-    console.error('Error initializing payout wallet:', error);
+    if (error instanceof Error) {
+      console.error('Error initializing payout wallet:', error.message);
+    } else {
+      console.error('Error initializing payout wallet:', error);
+    }
     return false;
   }
 }

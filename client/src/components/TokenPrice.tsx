@@ -12,43 +12,64 @@ export default function TokenPrice() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    const retryDelay = 1000;
+
     const fetchTokenInfo = async () => {
       try {
-        const response = await fetch('https://data.solanatracker.io/price', {
-          headers: {
-            'x-api-key': '91a88295-acb4-4f38-b9af-3cd58b69856b',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: 'GET'
-        });
+        setIsLoading(true);
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true',
+          {
+            headers: {
+              'Accept': 'application/json',
+              'Cache-Control': 'no-cache'
+            },
+            // Add timeout to prevent hanging requests
+            signal: AbortSignal.timeout(5000)
+          }
+        );
         
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded');
+        }
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
         
-        if (!data || typeof data.price === 'undefined') {
-          throw new Error('Invalid response format from API');
+        if (!data || !data.solana) {
+          throw new Error('Token price data not found');
         }
         
         const priceData = {
-          price: parseFloat(data.price || '0'),
-          marketCap: parseFloat(data.marketCap || '0'),
-          volume24h: parseFloat(data.volume24h || '0')
+          price: data.solana.usd,
+          marketCap: data.solana.usd_market_cap,
+          volume24h: data.solana.usd_24h_vol
         };
         
         setTokenInfo(priceData);
+        retryCount = 0; // Reset retry count on success
       } catch (error) {
         console.error('Error fetching token info:', error);
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`Retrying (${retryCount}/${maxRetries}) in ${retryDelay}ms...`);
+          setTimeout(fetchTokenInfo, retryDelay * retryCount);
+        } else {
+          setTokenInfo(null);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTokenInfo();
-    const interval = setInterval(fetchTokenInfo, 30000); // Update every 30 seconds
+    // Update every minute instead of 30s to avoid rate limits
+    const interval = setInterval(fetchTokenInfo, 60000);
 
     return () => clearInterval(interval);
   }, []);

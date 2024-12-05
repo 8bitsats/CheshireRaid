@@ -24,11 +24,17 @@ export default function Dashboard() {
     fetchTweets();
     const interval = setInterval(fetchTweets, 60000);
 
-    // Initialize payout wallet
-    if (env.SOLANA_PAYOUT_PRIVATE_KEY) {
-      const initialized = initializePayoutWallet(env.SOLANA_PAYOUT_PRIVATE_KEY);
-      if (!initialized) {
-        console.error('Failed to initialize payout wallet');
+    // Initialize payout wallet if key is available and valid
+    if (env.SOLANA_PAYOUT_PRIVATE_KEY && 
+        env.SOLANA_PAYOUT_PRIVATE_KEY !== 'undefined' && 
+        env.SOLANA_PAYOUT_PRIVATE_KEY.length > 0) {
+      try {
+        const initialized = initializePayoutWallet(env.SOLANA_PAYOUT_PRIVATE_KEY);
+        if (!initialized) {
+          console.warn('Payout wallet initialization skipped - this is optional and only needed for payouts');
+        }
+      } catch (error) {
+        console.warn('Payout wallet initialization failed - this is optional and only needed for payouts');
       }
     }
 
