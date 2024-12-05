@@ -2,5 +2,5 @@
 export const env = {
   ELEVEN_LABS_API_KEY: import.meta.env.VITE_ELEVEN_LABS_API_KEY as string,
   ELEVEN_LABS_AGENT_ID: import.meta.env.VITE_ELEVEN_LABS_AGENT_ID as string,
-  OPEN_AI_API_KEY: import.meta.env.VITE_OPEN_AI_API_KEY as string,
+  OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY as string,
 };
