@@ -1,4 +1,5 @@
 import Dashboard from '@/components/Dashboard';
+import { motion } from 'framer-motion';
 
 export default function HomePage() {
   return (
@@ -6,11 +7,31 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-green-400 to-purple-400 text-transparent bg-clip-text animate-gradient">
-            Cheshire Terminal
+            Cheshire Terminal Social Platform
           </h1>
-          <p className="text-gray-400 mt-4">
+          <div className="text-lg text-purple-400 mt-3">
+            Powered by $grin token on Solana
+          </div>
+          <p className="text-gray-400 mt-2">
             Your gateway to the Solana wonderland
           </p>
+          <motion.div 
+            className="text-4xl mt-4 cursor-grab active:cursor-grabbing"
+            drag
+            dragConstraints={{ left: -50, right: 50, top: -50, bottom: 50 }}
+            whileHover={{ scale: 1.1 }}
+            whileDrag={{ scale: 0.95 }}
+            animate={{
+              y: [0, -10, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            😸
+          </motion.div>
           <img 
             src="https://guzlanuvzfgcekmupcrx.supabase.co/storage/v1/object/public/Ammo/dope.png"
             alt="Grin Logo"
