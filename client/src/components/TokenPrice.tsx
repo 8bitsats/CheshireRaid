@@ -14,16 +14,31 @@ export default function TokenPrice() {
   useEffect(() => {
     const fetchTokenInfo = async () => {
       try {
-        // Using Jupiter API for token price data
-        const response = await fetch('https://price.jup.ag/v4/price?ids=7JofsgKgD3MerQDa7hEe4dfkY3c3nMnsThZzUuYyTFpE');
+        const response = await fetch('https://data.solanatracker.io/price', {
+          headers: {
+            'x-api-key': '91a88295-acb4-4f38-b9af-3cd58b69856b',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'GET'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
-        const tokenData = data.data['7JofsgKgD3MerQDa7hEe4dfkY3c3nMnsThZzUuYyTFpE'];
+        
+        if (!data || typeof data.price === 'undefined') {
+          throw new Error('Invalid response format from API');
+        }
         
         const priceData = {
-          price: tokenData?.price || 0,
-          marketCap: tokenData?.marketCap || 0,
-          volume24h: tokenData?.volume24h || 0
+          price: parseFloat(data.price || '0'),
+          marketCap: parseFloat(data.marketCap || '0'),
+          volume24h: parseFloat(data.volume24h || '0')
         };
+        
         setTokenInfo(priceData);
       } catch (error) {
         console.error('Error fetching token info:', error);
@@ -44,9 +59,13 @@ export default function TokenPrice() {
         <div className="text-sm text-gray-400">Current Price</div>
         {isLoading ? (
           <div className="animate-pulse h-6 bg-purple-500/20 rounded" />
-        ) : (
+        ) : tokenInfo ? (
           <div className="text-2xl font-bold text-purple-400">
-            ${tokenInfo?.price?.toFixed(4) ?? 'N/A'}
+            ${tokenInfo.price.toFixed(4)}
+          </div>
+        ) : (
+          <div className="text-sm text-red-400">
+            Unable to fetch price data. Please try again later.
           </div>
         )}
         <div className="grid grid-cols-2 gap-4 mt-2">
