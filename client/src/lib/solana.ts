@@ -33,3 +33,23 @@ export async function subscribeToBalanceUpdates(
     callback(account.lamports / 1e9);
   });
 }
+
+export async function getPayoutStats(): Promise<{
+  totalPaidOut: number;
+  remainingToEarn: number;
+}> {
+  try {
+    const response = await fetch('/api/payout-stats');
+    const stats = await response.json();
+    return {
+      totalPaidOut: stats.totalPaidOut / 1e9, // Convert from lamports to SOL
+      remainingToEarn: stats.remainingToEarn / 1e9
+    };
+  } catch (error) {
+    console.error("Error fetching payout stats:", error);
+    return {
+      totalPaidOut: 0,
+      remainingToEarn: 0
+    };
+  }
+}

@@ -2,7 +2,7 @@ import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
 const openai = new OpenAI({ 
-  apiKey: import.meta.env.VITE_OPEN_AI_API_KEY || '',
+  apiKey: import.meta.env.VITE_OPEN_AI_API_KEY,
   dangerouslyAllowBrowser: true
 });
 
@@ -12,7 +12,7 @@ export async function generateChatResponse(
 ): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4",
       messages: [
         {
           role: "system",

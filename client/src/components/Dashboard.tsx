@@ -6,6 +6,7 @@ import TweetVerify from './TweetVerify';
 import ChatInterface from './ChatInterface';
 import BalanceTracker from './BalanceTracker';
 import TokenPrice from './TokenPrice';
+import PayoutTracker from './PayoutTracker';
 import { getLatestTweets } from '@/lib/twitter';
 
 export default function Dashboard() {
@@ -44,6 +45,7 @@ export default function Dashboard() {
             <BalanceTracker />
           </Card>
           <TokenPrice />
+          <PayoutTracker />
         </div>
 
         <Card className="md:col-span-2 p-6 bg-black/50 border-purple-500/50 backdrop-blur">

@@ -1,7 +1,7 @@
 import { Express } from "express";
 import { db } from "../db";
-import { users, verifications, chats } from "@db/schema";
-import { eq } from "drizzle-orm";
+import { users, verifications, chats, payouts, raidEarnings } from "@db/schema";
+import { eq, sql, desc } from "drizzle-orm";
 
 import axios from 'axios';
 
@@ -92,6 +92,32 @@ export function registerRoutes(app: Express) {
       res.json(userChats);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch chats" });
+    }
+  });
+
+  app.get("/api/payout-stats", async (req, res) => {
+    try {
+      // Get total paid out
+      const [totalPaidOutResult] = await db
+        .select({
+          total: sql<number>`sum(${payouts.amount})`
+        })
+        .from(payouts);
+
+      // Get remaining to earn
+      const [raidEarningsResult] = await db
+        .select()
+        .from(raidEarnings)
+        .orderBy(desc(raidEarnings.lastUpdated))
+        .limit(1);
+
+      res.json({
+        totalPaidOut: totalPaidOutResult?.total || 0,
+        remainingToEarn: raidEarningsResult?.remainingAmount || 0
+      });
+    } catch (error) {
+      console.error('Error fetching payout stats:', error);
+      res.status(500).json({ error: "Failed to fetch payout stats" });
     }
   });
 }

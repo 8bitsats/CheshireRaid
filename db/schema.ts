@@ -26,6 +26,21 @@ export const chats = pgTable("chats", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const payouts = pgTable("payouts", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  amount: integer("amount").notNull(), // Amount in lamports
+  recipientAddress: text("recipient_address").notNull(),
+  transactionHash: text("transaction_hash").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+export const raidEarnings = pgTable("raid_earnings", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  totalAmount: integer("total_amount").notNull(), // Total amount in lamports
+  remainingAmount: integer("remaining_amount").notNull(), // Remaining amount in lamports
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
 export type InsertUser = z.infer<typeof insertUserSchema>;
